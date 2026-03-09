@@ -160,15 +160,31 @@ description: |
 
 ---
 
-### 2단계: Store 확인/생성
+### 2단계: Store 확인/생성 + _common 래퍼 확인
 
 ```bash
 ls front/src/modules/[모듈명]/store/
 cat front/src/modules/[모듈명]/store/[모듈명].store.ts
+
+# _common 래퍼 컴포넌트 존재 여부 확인 (조건부)
+ls front/src/modules/_common/components/ 2>/dev/null
 ```
 
 - **Store 있음** → Store 기반으로 UI 개발 진행
 - **Store 없음** → Mock 기반 Store 먼저 생성 → [mock-store-pattern.md](references/core/mock-store-pattern.md) 참조
+
+#### _common 래퍼 우선 사용 (조건부)
+
+> 대상 프로젝트에 `_common/components/` 디렉토리가 존재하면 NuxtUI 직접 사용 대신 래퍼 컴포넌트를 우선 사용합니다.
+
+| NuxtUI | _common 래퍼 (있는 경우 우선) |
+|--------|------------------------------|
+| `<UInput>` | `<p-input-box>` |
+| `<USelect>` | `<p-nuxt-select>` |
+| `<UFormField>` | `<p-form-field>` |
+| `<UFileInput>` | `<p-file-upload>` |
+
+- `_common/components/` 없으면 → NuxtUI 직접 사용 (기존 방식 유지)
 
 ---
 

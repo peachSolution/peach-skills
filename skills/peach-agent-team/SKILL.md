@@ -48,37 +48,77 @@ ls api/db/schema/
 head -5 api/src/modules/test-data/dao/test-data.dao.ts
 head -3 api/src/modules/test-data/controller/test-data.controller.ts
 ls front/src/modules/test-data/
+
+# DAO 라이브러리 감지
+# from 'bunqldb' → 재할당 방식
+# from 'sql-template-strings' → append 방식
 ```
 
-### 2. 역할 구성
+### 2. 팀 구성 다이어그램
 
-`mode=backend`
-- backend-dev → backend-qa
-- backend-dev → store-dev → frontend-qa
+**mode=backend**
+```
+team-backend-dev ──→ team-backend-qa
+       │
+       └──→ team-store-dev ──→ team-frontend-qa
+```
 
-`mode=ui`
-- ui-dev → frontend-qa
+**mode=ui**
+```
+team-ui-dev ──→ team-frontend-qa
+```
 
-`mode=fullstack`
-- backend-dev → backend-qa
-- backend-dev → store-dev → ui-dev → frontend-qa
+**mode=fullstack**
+```
+team-backend-dev ──→ team-backend-qa
+       │
+       └──→ team-store-dev ──→ team-ui-dev ──→ team-frontend-qa
+```
 
-### 3. 역할별 지시
+### 3. 팀 생성 및 작업 등록
+
+```
+TeamCreate: team_name="[모듈명]-[mode]-team"
+
+# mode=backend 작업 등록
+TaskCreate:
+1. "Backend API 개발" (owner: team-backend-dev)
+2. "Backend QA 검증" (blockedBy: Task1, owner: team-backend-qa)
+3. "Frontend Store 개발" (blockedBy: Task1, owner: team-store-dev)
+4. "Frontend QA 검증" (blockedBy: Task3, owner: team-frontend-qa)
+
+# mode=ui 작업 등록
+TaskCreate:
+1. "UI 컴포넌트 생성" (owner: team-ui-dev)
+2. "Frontend QA 검증" (blockedBy: Task1, owner: team-frontend-qa)
+
+# mode=fullstack 작업 등록
+TaskCreate:
+1. "Backend API 개발" (owner: team-backend-dev)
+2. "Backend QA 검증" (blockedBy: Task1, owner: team-backend-qa)
+3. "Frontend Store 개발" (blockedBy: Task1, owner: team-store-dev)
+4. "Frontend UI 개발" (blockedBy: Task3, owner: team-ui-dev)
+5. "Frontend QA 검증" (blockedBy: Task4, owner: team-frontend-qa)
+```
+
+### 4. 역할별 지시
 
 #### backend-dev
 - `peach-gen-backend` 기준으로 API 코드를 생성합니다.
 - Koa/Elysia 모드를 감지합니다.
+- DAO 라이브러리(bunqldb/sql-template-strings)를 감지합니다.
 - 완료 기준: `bun test`, `bun run lint:fixed`, `bun run build` 통과
 - 산출물: API 파일 목록, 엔드포인트 스펙, 테스트 결과
 
 #### backend-qa
-- Backend 구조, 패턴, TDD, 빌드, 엔드포인트를 독립 검증합니다.
-- 확인 항목:
-  - `type/`, `dao/`, `service/`, `controller/`, `test/` 존재
-  - static service 규칙
-  - FK 금지
-  - 테스트 통과
-  - 빌드 성공
+**QA 체크리스트 (7항목)**:
+1. `type/`, `dao/`, `service/`, `controller/`, `test/` 파일 구조 존재
+2. Service static 메서드 규칙 준수
+3. FK 제약조건 없음
+4. `bun test` 통과
+5. `bun run lint:fixed` 통과
+6. `bun run build` 성공
+7. API 엔드포인트 스펙 일치
 
 #### store-dev
 - `peach-gen-store` 기준으로 Pinia Store를 생성합니다.
@@ -87,34 +127,135 @@ ls front/src/modules/test-data/
 
 #### ui-dev
 - `peach-gen-ui`, 필요 시 `peach-gen-design`을 사용합니다.
-- `figma=[URL]`가 있으면 디자인을 해석합니다.
+- `figma=[URL]`가 있으면 FigmaRemote MCP를 로드하여 디자인을 분석합니다.
 - UI 패턴(`ui=`)이 없으면 사용자에게 확인합니다.
+- 대상 프로젝트에 `_common/components/`가 존재하면 래퍼 컴포넌트를 우선 사용합니다.
 - 완료 기준: `npx vue-tsc --noEmit`, `bun run lint:fix`, `bun run build`
 
 #### frontend-qa
-- Store와 UI 구조를 독립 검증합니다.
-- 확인 항목:
-  - 파일 구조
-  - Composition API / Pinia Option API 패턴
-  - `listAction`, `resetAction`, `listMovePage`, `watch` 패턴
-  - 타입 체크, 린트, 빌드
-  - 금지된 AI Slop UI 패턴 없음
+**QA 체크리스트 (8항목)**:
+1. 파일 구조 (pages/, modals/, store/, type/) 존재
+2. Composition API (`<script setup>`) 패턴 준수
+3. Pinia Option API Store 패턴 준수
+4. `listAction`, `resetAction`, `listMovePage` 함수 구현
+5. URL watch 패턴 적용 (`route → listParams`, `route → getList`)
+6. `npx vue-tsc --noEmit` 통과
+7. `bun run lint:fix` 통과
+8. `bun run build` 성공 + AI Slop 디자인 패턴 없음
 
 ## Failure Handling
 
-- Backend QA 실패 → backend-dev 수정 → backend-qa 재검증
+- Backend QA 실패 → backend-dev 수정 → backend-qa 재검증 (SendMessage 활용)
 - Store 문제 → store-dev 수정 → frontend-qa 재검증
 - UI 문제 → ui-dev 수정 → frontend-qa 재검증
 
 ## Completion
 
-- 모든 QA가 통과해야 완료입니다.
-- 최종 보고에는 다음을 포함합니다:
-  - 모듈명
-  - mode
-  - 생성 파일 목록
-  - 테스트/타입체크/린트/빌드 결과
-  - 남은 수동 확인 항목
+모든 QA 통과 후 팀 정리:
+```
+SendMessage(shutdown_request) → 모든 팀원에게
+TeamDelete → 팀 정리
+```
+
+## 완료 보고 형식
+
+### mode=backend
+
+```
+✅ Backend + Store 연결 팀 개발 완료
+
+모듈: [모듈명]
+mode: backend
+
+결과:
+✅ team-backend-dev: API 생성 완료
+✅ team-backend-qa: TDD X개 통과
+✅ team-store-dev: Store 생성 완료
+✅ team-frontend-qa: vue-tsc + lint + build 통과
+
+생성된 파일:
+Backend:
+├── api/src/modules/[모듈명]/type/
+├── api/src/modules/[모듈명]/dao/
+├── api/src/modules/[모듈명]/service/
+├── api/src/modules/[모듈명]/controller/
+└── api/src/modules/[모듈명]/test/
+
+Frontend:
+├── front/src/modules/[모듈명]/type/[모듈명].type.ts
+└── front/src/modules/[모듈명]/store/[모듈명].store.ts
+
+다음 단계:
+→ bun start (Backend 실행)
+→ bun run dev (Frontend 실행)
+→ 브라우저에서 /[모듈명]/list 접속
+```
+
+### mode=ui
+
+```
+✅ UI Only 팀 개발 완료
+
+모듈: [모듈명]
+mode: ui
+패턴: [ui=패턴]
+피그마: [URL 또는 없음]
+
+결과:
+✅ team-ui-dev: UI 컴포넌트 생성 완료
+✅ team-frontend-qa: vue-tsc + lint + build 통과
+
+생성된 파일:
+├── front/src/modules/[모듈명]/pages/list.vue
+├── front/src/modules/[모듈명]/pages/list-search.vue
+├── front/src/modules/[모듈명]/pages/list-table.vue
+├── front/src/modules/[모듈명]/modals/insert.modal.vue
+├── front/src/modules/[모듈명]/modals/update.modal.vue
+├── front/src/modules/[모듈명]/modals/detail.modal.vue
+├── front/src/modules/[모듈명]/_[모듈명].routes.ts
+└── front/src/modules/[모듈명]/_[모듈명].validator.ts
+
+다음 단계:
+→ bun run dev (Frontend 실행)
+→ 브라우저에서 /[모듈명]/list 접속
+```
+
+### mode=fullstack
+
+```
+🎉 풀스택 개발 완료!
+
+모듈: [모듈명]
+mode: fullstack
+
+결과:
+✅ team-backend-dev: API 생성 완료
+✅ team-backend-qa: TDD X개 통과
+✅ team-store-dev: Store 생성 완료
+✅ team-ui-dev: UI 컴포넌트 생성 완료
+✅ team-frontend-qa: vue-tsc + lint + build 통과
+
+생성된 파일:
+Backend:
+├── api/src/modules/[모듈명]/type/
+├── api/src/modules/[모듈명]/dao/
+├── api/src/modules/[모듈명]/service/
+├── api/src/modules/[모듈명]/controller/
+└── api/src/modules/[모듈명]/test/
+
+Frontend:
+├── front/src/modules/[모듈명]/type/
+├── front/src/modules/[모듈명]/store/
+├── front/src/modules/[모듈명]/pages/
+├── front/src/modules/[모듈명]/modals/
+├── front/src/modules/[모듈명]/_[모듈명].routes.ts
+└── front/src/modules/[모듈명]/_[모듈명].validator.ts
+
+다음 단계:
+→ bun start (Backend 실행)
+→ bun run dev (Frontend 실행)
+→ 브라우저에서 /[모듈명]/list 접속
+```
 
 ## Examples
 

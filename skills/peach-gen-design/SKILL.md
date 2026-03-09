@@ -111,6 +111,24 @@ description: |
 
 **참조**: [tailwind-nuxtui.md](references/tailwind-nuxtui.md)
 
+#### _common 래퍼 매핑 (조건부)
+
+> 대상 프로젝트에 `_common/components/`가 존재하면 래퍼 컴포넌트를 우선 사용합니다.
+
+```bash
+# 확인 방법
+ls front/src/modules/_common/components/
+```
+
+| NuxtUI | _common 래퍼 (있는 경우 우선) |
+|--------|------------------------------|
+| `<UInput>` | `<p-input-box>` |
+| `<USelect>` | `<p-nuxt-select>` |
+| `<UFormField>` | `<p-form-field>` |
+| `<UFileInput>` | `<p-file-upload>` |
+
+`_common/components/` 없으면 → NuxtUI 직접 사용 (기존 방식 유지)
+
 ```bash
 # 검증
 cd front && npx vue-tsc --noEmit

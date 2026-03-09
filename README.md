@@ -2,6 +2,11 @@
 
 PeachSolution 아키텍처 기반의 공개 스킬 모음입니다.
 
+## 문서
+
+- **[AGENTS.md](AGENTS.md)** - 아키텍처 가이드 (공통 원칙, 백엔드/프론트엔드 패턴, 스킬 규칙)
+- **[CLAUDE.md](CLAUDE.md)** - Claude Code 진입점
+
 이 저장소는 `skills.sh` 기준의 공용 배포 저장소이며, 에이전트 전용 `.claude/agents` 대신 `skills/` 아래의 스킬 정본만 관리합니다.
 
 ## 설치
