@@ -251,6 +251,33 @@ npx skills add peachSolution/peach-harness --skill [스킬명] -a claude-code
 - 조건부 참조: 필요한 참조만 로드 (토큰 절약)
 - 외부 프로젝트 파일 직접 참조 금지 (설치 후 대상 프로젝트 경로 안내로 대체)
 
+### 버전 관리 규칙
+
+#### 버전 파일
+두 파일의 version을 **항상 동일하게** 유지한다. 불일치 시 auto update가 실패한다.
+
+- `.claude-plugin/marketplace.json` → `plugins[0].version`
+- `.claude-plugin/plugin.json` → `version`
+
+#### Semver 기준
+
+| 변경 유형 | 버전 | 예시 |
+|----------|------|------|
+| **patch** (x.x.+1) | 문서 수정, 오타, 버그 수정 | SKILL.md 오류 수정, 참조 경로 수정 |
+| **minor** (x.+1.0) | 스킬/에이전트 추가, 기존 기능 개선 | 새 스킬 추가, 에이전트 로직 변경 |
+| **major** (+1.0.0) | 하위호환 파괴, 구조 변경 | 배포 구조 변경, 스킬 인터페이스 변경 |
+
+#### 버전 업데이트 시점
+- **커밋 단위가 아닌 릴리스 단위**로 버전을 올린다
+- main 브랜치에 머지할 때 버전을 업데이트한다
+- develop에서는 버전을 변경하지 않는다
+
+#### 버전 업데이트 절차
+1. develop에서 작업 완료
+2. main 머지 전, 두 파일의 version을 동시에 업데이트
+3. 커밋 메시지: `Release v{버전}` (예: `Release v1.1.0`)
+4. main에 머지 후 push
+
 ---
 
 ## 5. AI 자율성 허용 범위 (Bounded Autonomy)
