@@ -27,7 +27,7 @@
 - `undefined` 타입 금지
 
 ### 가이드 코드 위치
-코드 생성 = **가이드 코드 복사** + 모듈명 치환
+코드 생성 = **가이드 코드 참조** → 도메인 분석 → Bounded Autonomy 범위 내 적응
 - Backend: `api/src/modules/test-data/`
 - Frontend: `front/src/modules/test-data/`
 
@@ -251,6 +251,33 @@ npx skills add peachSolution/peach-harness --skill [스킬명] -a claude-code
 - 조건부 참조: 필요한 참조만 로드 (토큰 절약)
 - 외부 프로젝트 파일 직접 참조 금지 (설치 후 대상 프로젝트 경로 안내로 대체)
 
+### 버전 관리 규칙
+
+#### 버전 파일
+두 파일의 version을 **항상 동일하게** 유지한다. 불일치 시 auto update가 실패한다.
+
+- `.claude-plugin/marketplace.json` → `plugins[0].version`
+- `.claude-plugin/plugin.json` → `version`
+
+#### Semver 기준
+
+| 변경 유형 | 버전 | 예시 |
+|----------|------|------|
+| **patch** (x.x.+1) | 문서 수정, 오타, 버그 수정 | SKILL.md 오류 수정, 참조 경로 수정 |
+| **minor** (x.+1.0) | 스킬/에이전트 추가, 기존 기능 개선 | 새 스킬 추가, 에이전트 로직 변경 |
+| **major** (+1.0.0) | 하위호환 파괴, 구조 변경 | 배포 구조 변경, 스킬 인터페이스 변경 |
+
+#### 버전 업데이트 시점
+- **커밋 단위가 아닌 릴리스 단위**로 버전을 올린다
+- main 브랜치에 머지할 때 버전을 업데이트한다
+- develop에서는 버전을 변경하지 않는다
+
+#### 버전 업데이트 절차
+1. develop에서 작업 완료
+2. main 머지 전, 두 파일의 version을 동시에 업데이트
+3. 커밋 메시지: `Release v{버전}` (예: `Release v1.1.0`)
+4. main에 머지 후 push
+
 ---
 
 ## 5. AI 자율성 허용 범위 (Bounded Autonomy)
@@ -351,6 +378,7 @@ export interface Example {
 
 | 스킬 | 용도 | 팀 역할 |
 |------|------|---------|
+| `peach-ask` | 하네스 시스템 안내 (스킬 추천, 워크플로우 안내) | - |
 | `peach-gen-prd` | PRD 문서 생성 (대화형 요구사항 수집) | - |
 | `peach-gen-db` | DB DDL/마이그레이션 생성 | - |
 | `peach-gen-backend` | Backend API 생성 (bun test 필수) | backend-dev |
@@ -373,7 +401,7 @@ export interface Example {
 
 | 유형 | 스킬 | 테스트 전략 |
 |------|------|-----------|
-| 능력 향상형 (3) | gen-design, gen-prd, gen-feature-docs | 새 모델 시 A/B 테스트 |
+| 능력 향상형 (4) | gen-design, gen-prd, gen-feature-docs, ask | 새 모델 시 A/B 테스트 |
 | 선호도 인코딩형 (11) | gen-backend, gen-db, gen-store, gen-ui, add-api, add-cron, add-print, refactor-backend, refactor-frontend, agent-team, agent-team-refactor | Eval 충실도 검증 |
 | 프로세스 게이트 (3) | planning-gate, evidence-gate, handoff | 워크플로우 품질 게이트 |
 
