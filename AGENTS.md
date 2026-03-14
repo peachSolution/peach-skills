@@ -456,6 +456,19 @@ export interface Example {
 - `isolation: worktree` 옵션으로 독립 작업 트리에서 검증한다.
 - 구현 에이전트와 컨텍스트를 공유하지 않아 확증 편향을 방지한다.
 
+### 자기완결적 스킬 원칙
+
+팀 스킬은 `agents/` 디렉토리 없이도 완전하게 동작해야 한다. (멀티 AI 도구 지원)
+
+- **`agents/*.md`**: Source of truth. Claude Code 네이티브 서브에이전트가 직접 참조한다.
+- **`skills/*/references/*-agent.md`**: 팀 스킬 자기완결성을 위한 복사본. `agents/`를 인식하지 못하는 AI 도구에서 사용된다.
+- **에이전트 정의 변경 시**: `agents/*.md`와 해당 `references/*-agent.md` 양쪽을 모두 업데이트한다.
+
+| 파일 | 역할 | 사용 주체 |
+|------|------|----------|
+| `agents/backend-dev.md` | Source of truth | Claude Code, Codex CLI |
+| `skills/peach-agent-team/references/backend-dev-agent.md` | 복사본 | Cursor, Copilot 등 |
+
 ---
 
 ## 11. Ralph Loop 규칙

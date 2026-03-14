@@ -103,12 +103,24 @@ TaskCreate:
 
 ### 4. 역할별 지시
 
+각 역할의 전체 정의(페르소나, Bounded Autonomy, 워크플로우)는 `references/`에 있습니다.
+서브에이전트 생성 시 해당 파일의 전체 내용을 프롬프트에 포함합니다.
+
+| 역할 | 참조 파일 | 핵심 스킬 |
+|------|----------|----------|
+| backend-dev | references/backend-dev-agent.md | peach-gen-backend |
+| backend-qa | references/backend-qa-agent.md | 검증 전용 (읽기전용, worktree) |
+| store-dev | references/store-dev-agent.md | peach-gen-store |
+| ui-dev | references/ui-dev-agent.md | peach-gen-ui + peach-gen-design |
+| frontend-qa | references/frontend-qa-agent.md | 검증 전용 (읽기전용, worktree) |
+
 #### backend-dev
 - `peach-gen-backend` 기준으로 API 코드를 생성합니다.
 - Koa/Elysia 모드를 감지합니다.
 - DAO 라이브러리(bunqldb/sql-template-strings)를 감지합니다.
 - 완료 기준: `bun test`, `bun run lint:fixed`, `bun run build` 통과
 - 산출물: API 파일 목록, 엔드포인트 스펙, 테스트 결과
+- 상세: `references/backend-dev-agent.md` 참조
 
 #### backend-qa
 **QA 체크리스트 (7항목)**:
@@ -119,11 +131,13 @@ TaskCreate:
 5. `bun run lint:fixed` 통과
 6. `bun run build` 성공
 7. API 엔드포인트 스펙 일치
+- 상세: `references/backend-qa-agent.md` 참조
 
 #### store-dev
 - `peach-gen-store` 기준으로 Pinia Store를 생성합니다.
 - Backend 타입과 인터페이스를 맞춥니다.
 - 완료 기준: `npx vue-tsc --noEmit`
+- 상세: `references/store-dev-agent.md` 참조
 
 #### ui-dev
 - `peach-gen-ui`, 필요 시 `peach-gen-design`을 사용합니다.
@@ -131,6 +145,7 @@ TaskCreate:
 - UI 패턴(`ui=`)이 없으면 사용자에게 확인합니다.
 - 대상 프로젝트에 `_common/components/`가 존재하면 래퍼 컴포넌트를 우선 사용합니다.
 - 완료 기준: `npx vue-tsc --noEmit`, `bun run lint:fix`, `bun run build`
+- 상세: `references/ui-dev-agent.md` 참조
 
 #### frontend-qa
 **QA 체크리스트 (8항목)**:
@@ -142,6 +157,7 @@ TaskCreate:
 6. `npx vue-tsc --noEmit` 통과
 7. `bun run lint:fix` 통과
 8. `bun run build` 성공 + AI Slop 디자인 패턴 없음
+- 상세: `references/frontend-qa-agent.md` 참조
 
 ## Ralph Loop (반복 검증 메커니즘)
 

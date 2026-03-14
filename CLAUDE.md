@@ -25,12 +25,13 @@ peach-harness/
 ## 설치
 
 ```bash
+# skills.sh (권고 - 14+ AI 도구 지원)
+npx skills add peachSolution/peach-harness --skill '*' -a claude-code
+
+# Claude Code 플러그인 (호환)
 # 1. 마켓플레이스 등록
 /plugin marketplace add peachSolution/peach-harness
 
 # 2. 플러그인 설치
 /plugin install peach-harness-plugin
-
-# skills.sh 설치 (호환)
-npx skills add peachSolution/peach-harness --skill '*' -a claude-code
 ```

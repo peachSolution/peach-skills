@@ -57,15 +57,28 @@ peach-harness/
 
 ## 설치 방법
 
+### skills.sh (권고 — 14+ AI 도구 지원)
+
+SKILL.md 오픈 스탠다드 기반으로 Claude Code, Cursor, Codex CLI, Antigravity, Copilot, Gemini CLI 등을 지원한다.
+
+```bash
+# 전체 스킬 설치
+npx skills add peachSolution/peach-harness --skill '*' -a claude-code
+
+# 특정 스킬만 설치
+npx skills add peachSolution/peach-harness --skill peach-agent-team -a claude-code
+```
+
+### Claude Code 플러그인 (호환 — Claude Code 전용 기능 포함)
+
+agents/, hooks/, MCP 서버 등 Claude Code 전용 기능을 포함한다.
+
 ```bash
 # 1. 마켓플레이스 등록
 /plugin marketplace add peachSolution/peach-harness
 
 # 2. 플러그인 설치
 /plugin install peach-harness-plugin
-
-# skills.sh 호환 설치
-npx skills add peachSolution/peach-harness --skill '*' -a claude-code
 ```
 
 ## 업데이트

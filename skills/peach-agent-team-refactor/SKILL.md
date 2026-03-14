@@ -94,6 +94,16 @@ TaskCreate:
 
 ## 역할별 지시
 
+각 역할의 전체 정의(페르소나, Bounded Autonomy, 워크플로우)는 `references/`에 있습니다.
+서브에이전트 생성 시 해당 파일의 전체 내용을 프롬프트에 포함합니다.
+
+| 역할 | 참조 파일 | 핵심 스킬 |
+|------|----------|----------|
+| refactor-backend | references/refactor-backend-agent.md | peach-refactor-backend |
+| backend-qa | references/backend-qa-agent.md | 검증 전용 (읽기전용, worktree) |
+| refactor-frontend | references/refactor-frontend-agent.md | peach-refactor-frontend |
+| frontend-qa | references/frontend-qa-agent.md | 검증 전용 (읽기전용, worktree) |
+
 #### refactor-backend
 - `peach-refactor-backend` 기준으로 type/dao/service/controller/test를 정리합니다.
 - **DAO 라이브러리 분기**:
@@ -102,6 +112,7 @@ TaskCreate:
 - 기존 기능은 유지하고 구조만 개선합니다.
 - 4단계 리팩토링 순서: Type → DAO → Service/Controller → TDD
 - 완료 기준: `bun test`, `bun run lint:fixed`, `bun run build`
+- 상세: `references/refactor-backend-agent.md` 참조
 
 #### backend-qa
 - 리팩토링 후 구조, 패턴, 테스트, 빌드를 검증합니다.
@@ -114,12 +125,14 @@ TaskCreate:
   5. `bun run lint:fixed` 통과
   6. `bun run build` 성공
   7. 기능 100% 보존 확인
+- 상세: `references/backend-qa-agent.md` 참조
 
 #### refactor-frontend
 - `peach-refactor-frontend` 기준으로 type/store/pages/modals를 정리합니다.
 - URL watch 패턴, Composition API, Pinia Option API를 강제합니다.
 - 3단계 리팩토링 순서: Type & Store → Pages → Modals
 - 완료 기준: `npx vue-tsc --noEmit`, `bun run lint:fix`, `bun run build`
+- 상세: `references/refactor-frontend-agent.md` 참조
 
 #### frontend-qa
 - 파일 구조, watch 패턴, UI 패턴, 빌드 결과를 검증합니다.
@@ -133,6 +146,7 @@ TaskCreate:
   6. `npx vue-tsc --noEmit` 통과
   7. `bun run lint:fix` 통과
   8. `bun run build` 성공 + AI Slop 제거 확인
+- 상세: `references/frontend-qa-agent.md` 참조
 
 ## Ralph Loop (반복 검증 메커니즘)
 
