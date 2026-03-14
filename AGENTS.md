@@ -383,6 +383,7 @@ export interface Example {
 | `peach-gen-backend` | Backend API 생성 (bun test 필수) | backend-dev |
 | `peach-gen-store` | Frontend Store 생성 (vue-tsc 필수) | store-dev |
 | `peach-gen-ui` | Frontend UI 생성 (vue-tsc/lint/build 필수) | ui-dev |
+| `peach-gen-ui-proto` | UI 프로토타입 생성 (Mock 데이터 기반, 기획자용) | ui-dev |
 | `peach-gen-design` | 디자인 시스템 컨설팅 | ui-dev |
 | `peach-gen-feature-docs` | 기능 문서 생성 | - |
 | `peach-add-api` | 외부 REST API 호출 코드 생성 | - |
@@ -401,7 +402,7 @@ export interface Example {
 | 유형 | 스킬 | 테스트 전략 |
 |------|------|-----------|
 | 능력 향상형 (4) | gen-design, gen-prd, gen-feature-docs, ask | 새 모델 시 A/B 테스트 |
-| 선호도 인코딩형 (11) | gen-backend, gen-db, gen-store, gen-ui, add-api, add-cron, add-print, refactor-backend, refactor-frontend, agent-team, agent-team-refactor | Eval 충실도 검증 |
+| 선호도 인코딩형 (12) | gen-backend, gen-db, gen-store, gen-ui, gen-ui-proto, add-api, add-cron, add-print, refactor-backend, refactor-frontend, agent-team, agent-team-refactor | Eval 충실도 검증 |
 | 프로세스 게이트 (3) | planning-gate, evidence-gate, handoff | 워크플로우 품질 게이트 |
 
 ### 에이전트 팀원 역할
@@ -411,7 +412,7 @@ export interface Example {
 | backend-dev | Backend API 개발 | peach-gen-backend |
 | backend-qa | Backend QA 검증 | 검증 전용 |
 | store-dev | Frontend Store 개발 | peach-gen-store |
-| ui-dev | Frontend UI + 디자인 (FigmaRemote MCP) | peach-gen-ui + peach-gen-design |
+| ui-dev | Frontend UI + 디자인 (FigmaRemote MCP) | peach-gen-ui + peach-gen-ui-proto + peach-gen-design |
 | frontend-qa | Frontend QA 검증 | 검증 전용 |
 | refactor-backend | Backend 리팩토링 | peach-refactor-backend |
 | refactor-frontend | Frontend 리팩토링 | peach-refactor-frontend |
