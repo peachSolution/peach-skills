@@ -48,8 +48,14 @@ ls -d api/ front/ 2>/dev/null || echo "모노레포 아님"
 # Controller 프레임워크 감지 (Koa vs Elysia)
 head -3 api/src/modules/test-data/controller/test-data.controller.ts 2>/dev/null || echo "controller 없음"
 
+# DAO 라이브러리 감지 (bunqldb vs sql-template-strings)
+head -5 api/src/modules/test-data/dao/test-data.dao.ts 2>/dev/null || echo "dao 없음"
+
 # DB 종류 감지
 grep -i "host\|database\|mysql\|postgres" api/env.local.yml 2>/dev/null | head -5 || echo "env.local.yml 없음"
+
+# Frontend-Only 프로젝트 감지 (api/ 없는 경우)
+ls -d src/modules*/ 2>/dev/null && echo "Frontend-Only 프로젝트" || echo "src/modules*/ 없음"
 
 # cursor rules 존재 여부
 ls api/.cursor/rules/ 2>/dev/null && echo "api cursor rules 존재" || echo "api cursor rules 없음"
@@ -61,40 +67,57 @@ ls .cursorrules 2>/dev/null && echo ".cursorrules 존재" || echo ".cursorrules 
 - CLAUDE.md: 존재 여부, 현재 줄 수, AGENTS.md와 중복되는 섹션 목록
 - AGENTS.md: 존재 여부, "하네스 시스템 연동" 섹션 존재 여부
 - docs/handoff/: 존재 여부
-- 프로젝트 유형: api/+front/ 모노레포, 단독 api/, 단독 front/, 기타
-- Controller 프레임워크: Koa (routing-controllers) 또는 Elysia
-- DB 종류: MySQL 또는 PostgreSQL
+- 프로젝트 유형:
+  - `api/ + front/` 모노레포 (기존)
+  - 단독 `api/` (기존)
+  - 단독 `front/` (기존)
+  - Frontend-Only: `ls -d src/modules*/` 결과를 `{모듈구조}`로 사용
+- Controller 프레임워크: Koa (routing-controllers) 또는 Elysia (api/ 없으면 해당 없음)
+- DB 종류: MySQL 또는 PostgreSQL (api/ 없으면 해당 없음)
 - cursor rules: 존재 여부 및 파일 목록
 
 ### Step 2: AGENTS.md 필수 섹션 점검
 
-AGENTS.md가 존재하는 경우, 아래 필수 섹션이 있는지 확인한다:
+AGENTS.md가 존재하는 경우, 아래 핵심 섹션이 있는지 확인한다:
 
 ```bash
-# 각 섹션 존재 여부 확인
-grep -l "공통 원칙" AGENTS.md 2>/dev/null && echo "§1 존재" || echo "§1 누락"
-grep -l "백엔드 규칙" AGENTS.md 2>/dev/null && echo "§2 존재" || echo "§2 누락"
-grep -l "에러 처리 전략" AGENTS.md 2>/dev/null && echo "에러처리 존재" || echo "에러처리 누락"
-grep -l "Bun SQL" AGENTS.md 2>/dev/null && echo "BunSQL 존재" || echo "BunSQL 누락"
-grep -l "프론트엔드 규칙" AGENTS.md 2>/dev/null && echo "§3 존재" || echo "§3 누락"
-grep -l "_common 래퍼" AGENTS.md 2>/dev/null && echo "_common 존재" || echo "_common 누락"
-grep -l "Computed 래핑" AGENTS.md 2>/dev/null && echo "Computed 존재" || echo "Computed 누락"
-grep -l "Bounded Autonomy" AGENTS.md 2>/dev/null && echo "§5 존재" || echo "§5 누락"
-grep -l "테스트 및 품질" AGENTS.md 2>/dev/null && echo "§6 존재" || echo "§6 누락"
-grep -l "Validator" AGENTS.md 2>/dev/null && echo "§7 존재" || echo "§7 누락"
-grep -l "독립 도메인" AGENTS.md 2>/dev/null && echo "§9 존재" || echo "§9 누락"
+grep -l "공통 원칙\|_common.*import" AGENTS.md 2>/dev/null && echo "§공통원칙 존재" || echo "§공통원칙 누락"
+grep -l "백엔드 규칙\|ErrorHandler" AGENTS.md 2>/dev/null && echo "§백엔드 존재" || echo "§백엔드 누락"
+grep -l "프론트엔드 규칙\|computed" AGENTS.md 2>/dev/null && echo "§프론트엔드 존재" || echo "§프론트엔드 누락"
+grep -l "테스트\|TDD" AGENTS.md 2>/dev/null && echo "§테스트 존재" || echo "§테스트 누락"
 grep -l "하네스 시스템 연동" AGENTS.md 2>/dev/null && echo "하네스연동 존재" || echo "하네스연동 누락"
 ```
 
+**Frontend-Only 프로젝트는 백엔드 관련 grep 스킵:**
+- `§백엔드 규칙`, `§테스트(TDD)` 항목은 확인하지 않음
+- `§프론트엔드 규칙`, `§공통원칙`, `§하네스연동`만 확인
+
+누락 섹션 발견 시 아래 references 파일을 소스로 사용한다:
+
+**공통 (항상 참조):**
+| 누락 섹션 | 소스 파일 |
+|----------|---------|
+| 공통 원칙 (네이밍, 타입, Bounded Autonomy, 독립도메인) | `peach-setup-harness/references/common-rules.md` |
+| 백엔드 규칙 (기술스택, 모듈구조, 에러처리, bunqldb 등) | `peach-setup-harness/references/backend-rules.md` |
+| 프론트엔드 규칙 (NuxtUI v4, Store표준, Computed래핑 등) | `peach-setup-harness/references/frontend-rules.md` |
+| 테스트 및 품질 (TDD, 필수설정, 검증명령어) | `peach-setup-harness/references/testing-rules.md` |
+| Validator/타입 규칙 (class-validator/TypeBox, 인터페이스 구조) | `peach-setup-harness/references/validator-rules.md` |
+
+**Elysia 감지 시 추가 참조:**
+| 항목 | 소스 파일 |
+|------|---------|
+| Plugin System, try-catch 금지, Auth, Bun Native API, 로깅, 주석금지, API문서화 | `peach-setup-harness/references/backend-elysia-rules.md` |
+
+**AGENTS.md 없는 새 프로젝트 (완성형 참조):**
+| 프레임워크/유형 | 소스 파일 |
+|--------------|---------|
+| Koa 프로젝트 전체 AGENTS.md 템플릿 | `peach-setup-harness/references/example-koa-agents.md` |
+| Elysia 프로젝트 전체 AGENTS.md 템플릿 | `peach-setup-harness/references/example-elysia-agents.md` |
+| Frontend-Only 프로젝트 전체 AGENTS.md 템플릿 | `peach-setup-harness/references/example-ui-proto-agents.md` |
+
 Elysia 감지 시 추가 확인:
 ```bash
-grep -l "Plugin System\|plugin" AGENTS.md 2>/dev/null && echo "Elysia Plugin 존재" || echo "Elysia Plugin 누락"
-grep -l "try-catch 금지" AGENTS.md 2>/dev/null && echo "try-catch 규칙 존재" || echo "try-catch 규칙 누락"
-grep -l "문서화 패턴\|docs/" AGENTS.md 2>/dev/null && echo "API문서화 존재" || echo "API문서화 누락"
-grep -l "AuthContext" AGENTS.md 2>/dev/null && echo "Auth 존재" || echo "Auth 누락"
-grep -l "Bun Native" AGENTS.md 2>/dev/null && echo "BunNative 존재" || echo "BunNative 누락"
-grep -l "로깅" AGENTS.md 2>/dev/null && echo "로깅 존재" || echo "로깅 누락"
-grep -l "주석 금지" AGENTS.md 2>/dev/null && echo "주석금지 존재" || echo "주석금지 누락"
+grep -l "Plugin System\|try-catch 금지" AGENTS.md 2>/dev/null && echo "Elysia 규칙 존재" || echo "Elysia 규칙 누락"
 ```
 
 누락 섹션 목록을 기록한다.
@@ -134,9 +157,19 @@ grep -l "주석 금지" AGENTS.md 2>/dev/null && echo "주석금지 존재" || e
    - 20줄 이내 유지
 
 2. **AGENTS.md 누락 섹션 추가/업데이트**
-   - 하네스 AGENTS.md 기준으로 누락 섹션 추가
+   - AGENTS.md **없음** → 프레임워크/유형에 맞는 example 파일 기반으로 전체 생성
+     - Koa: `example-koa-agents.md` 기반 생성
+     - Elysia: `example-elysia-agents.md` 기반 생성
+     - Frontend-Only: `example-ui-proto-agents.md` 기반 생성
+       - `{모듈구조}` → `ls -d src/modules*/` 결과로 치환
+   - AGENTS.md **있음** → 누락 섹션만 개별 references에서 추출하여 추가
+     - `common-rules.md` → 공통 원칙 섹션
+     - `backend-rules.md` → 백엔드 규칙 섹션
+     - `backend-elysia-rules.md` → Elysia 전용 섹션 (Elysia인 경우)
+     - `frontend-rules.md` → 프론트엔드 규칙 섹션
+     - `testing-rules.md` → 테스트 및 품질 섹션
+     - `validator-rules.md` → Validator/타입 규칙 섹션
    - 프레임워크(Koa/Elysia)에 맞는 내용으로 작성
-   - Elysia인 경우 전용 항목 7개 추가
 
 3. **AGENTS.md에 "하네스 시스템 연동" 섹션 추가**
    - 기존 마지막 섹션 번호 확인 후 다음 번호로 추가
@@ -176,6 +209,33 @@ grep -l "주석 금지" AGENTS.md 2>/dev/null && echo "주석금지 존재" || e
 
 ---
 
+---
+
+## AGENTS.md 최소화 원칙
+
+AGENTS.md를 새로 생성하거나 보완할 때 아래 원칙을 적용한다.
+
+**근거:** 긴 AGENTS.md는 AI 성공률을 떨어뜨린다. "추론 불가능한 것만 남겨라."
+- 가이드 코드(`test-data/`)에서 추론 가능한 내용 → 가이드 코드 포인터로 대체
+- 린터(Biome/ESLint)가 잡을 수 있는 규칙 → 제거
+- 코드 예시 → `파일 경로 참조` 1줄로 대체
+
+**유지 (추론 불가 항목):**
+- 한국어 응답
+- `_common`만 import, FK 금지
+- 타입 규칙 (옵셔널/null/undefined 금지)
+- PK `seq` 접미사 + 감사 칼럼
+- 에러 처리 원칙 (기능오류 200+success:false / 시스템예외 ErrorHandler)
+- Elysia: try-catch 금지, Plugin System 자동 래핑
+- Store: Pinia Option API + computed 래핑 + isLoading 금지
+- TDD/실DB/모킹 금지
+- 완전 독립 도메인
+- 하네스 연동 섹션
+
+**목표 크기:** 60줄 이내 (하네스 연동 섹션 포함 ~80줄 허용)
+
+---
+
 ## CLAUDE.md 표준 템플릿
 
 대상 프로젝트의 CLAUDE.md를 아래 형식으로 정리한다.
@@ -207,7 +267,9 @@ grep -l "주석 금지" AGENTS.md 2>/dev/null && echo "주석금지 존재" || e
 - AGENTS.md와 중복되는 섹션은 제거 ("Claude 특화 지침", "코딩 규칙" 등)
 - 프로젝트별 고유 지침(Electron IPC, 특수 환경변수 등)은 별도 섹션으로 보존
 - "세션 시작" 섹션이 핵심 추가사항
-- "가이드 코드" 섹션은 모노레포(api/+front/)인 경우에만 포함
+- "가이드 코드" 섹션:
+  - 모노레포(api/+front/): `Backend: api/src/modules/test-data/` + `Frontend: front/src/modules/test-data/`
+  - Frontend-Only: `Frontend: src/modules/test-data/` (Backend 라인 제거)
 
 ---
 
@@ -246,8 +308,11 @@ grep -l "주석 금지" AGENTS.md 2>/dev/null && echo "주석금지 존재" || e
 - [ ] 프로젝트별 고유 지침이 보존됨
 
 추가 (신규):
-- [ ] AGENTS.md에 12개 필수 섹션이 모두 존재함
-- [ ] Elysia 프로젝트인 경우 Elysia 전용 항목이 포함됨
+- [ ] AGENTS.md에 필수 섹션이 모두 존재함 (공통원칙, 백엔드, 프론트엔드, 테스트, Validator, 독립도메인)
+- [ ] Elysia 프로젝트인 경우 Elysia 전용 항목이 포함됨 (Plugin, try-catch금지, Auth, 로깅, API문서화 등)
+- [ ] Frontend-Only 프로젝트인 경우 example-ui-proto-agents.md 기반으로 생성됨
+- [ ] Frontend-Only 프로젝트인 경우 CLAUDE.md 가이드 코드에 Backend 라인이 없음
+- [ ] 기술 스택이 정확히 반영됨 (bunqldb, NuxtUI v4, Biome/ESLint, int PK)
 - [ ] api/.cursor/rules/ 삭제됨 (존재했던 경우)
 - [ ] front/.cursor/rules/ 삭제됨 (존재했던 경우)
 - [ ] 루트 .cursorrules 삭제됨 (존재했던 경우)
