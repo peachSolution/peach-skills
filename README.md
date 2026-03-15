@@ -64,13 +64,13 @@ npx skills add peachSolution/peach-harness --skill '*' -a claude-code
 ### 업데이트
 
 ```bash
-# 업데이트 가능 여부 확인 (글로벌)
-npx skills check -g
+# update 명령으로 업데이트 (v1.4.5+에서 동작 확인)
+npx skills update
 
-# 재설치로 업데이트 (권장 — 글로벌)
+# 재설치로 업데이트 (가장 확실한 방법 — 글로벌)
 npx skills add peachSolution/peach-harness --skill '*' -a claude-code -g -y
 
-# 여러 AI 도구 동시 업데이트 (글로벌)
+# 여러 AI 도구 동시 재설치 업데이트 (글로벌)
 npx skills add peachSolution/peach-harness --skill '*' \
   -a claude-code \
   -a codex \
@@ -80,7 +80,8 @@ npx skills add peachSolution/peach-harness --skill '*' \
   -g -y
 ```
 
-> **참고**: `npx skills update`는 프로젝트 스킬에 대한 버그가 있어 재설치(`npx skills add ... -y`)를 권장합니다.
+> **`npx skills update` 참고**: v1.4.5 기준 `-g` 유무와 관계없이 동일하게 동작합니다 (`-g`는 `add`/`list`/`remove`에서 유효).
+> 확실하게 글로벌 최신화하려면 `npx skills add ... -g -y` 재설치를 권장합니다.
 
 ### Claude Code 플러그인 (호환 — Claude Code 전용 기능 포함)
 
