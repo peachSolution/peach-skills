@@ -417,6 +417,13 @@ export interface Example {
 | refactor-backend | Backend 리팩토링 | peach-refactor-backend |
 | refactor-frontend | Frontend 리팩토링 | peach-refactor-frontend |
 
+### PR 코드리뷰 워크플로우
+
+PeachSolution 규칙 검증은 QA 에이전트 + qa-gate가 담당합니다.
+PR 생성 전 범용 코드리뷰가 필요하면 built-in 스킬을 사용합니다:
+- `/requesting-code-review` — PR diff 기반 코드리뷰 요청
+- `/receiving-code-review` — 리뷰 피드백 처리
+
 ---
 
 ## 9. 완전 독립 도메인 구현

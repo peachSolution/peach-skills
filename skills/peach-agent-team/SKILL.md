@@ -41,6 +41,24 @@ PeachSolution 아키텍처에서 신규 기능 개발을 조율하는 통합 팀
 
 ## Orchestration
 
+### 0. 입력 검증
+
+mode와 모듈명이 모두 지정되어야 다음 단계로 진행합니다.
+누락된 경우 **반드시** 개발자에게 질문합니다.
+
+**mode 미지정 시:**
+```
+mode를 선택해주세요:
+1. backend — 기존 UI에 API + Store 연결
+2. ui — Store 기반 UI만 구현
+3. fullstack — DB 스키마 기반 전체 생성
+```
+
+**모듈명 미지정 시:**
+```
+모듈명을 입력해주세요 (예: notice-board, product-manage):
+```
+
 ### 1. 환경 확인
 
 ```bash
