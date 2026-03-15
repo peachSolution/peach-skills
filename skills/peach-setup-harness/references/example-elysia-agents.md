@@ -56,7 +56,7 @@
 - 5개 이상 TailwindCSS 클래스 → 배열 그룹화
 - 주석: 구분선/섹션/자명한 코드 설명 금지
 
-품질 검증: `bun run test && bun run build && bun run lint`
+품질 검증: `bun run test && bunx vue-tsc --noEmit && bun run build && bun run lint`
 
 ---
 

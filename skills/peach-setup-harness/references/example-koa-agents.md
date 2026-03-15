@@ -52,7 +52,7 @@
 - 모든 API는 Store 통해 호출
 - 5개 이상 TailwindCSS 클래스 → 배열 그룹화
 
-품질 검증: `bun run dev && bun run test && npx vue-tsc --noEmit && bun run lint:fix && bun run build`
+품질 검증: `bun run dev && bun run test && bunx vue-tsc --noEmit && bun run lint:fix && bun run build`
 
 ---
 

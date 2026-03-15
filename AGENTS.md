@@ -31,8 +31,9 @@
 - Backend: `api/src/modules/test-data/`
 - Frontend: `front/src/modules/test-data/`
 
-> **대상 프로젝트 기술 스택 규칙** (백엔드/프론트엔드/테스트/Validator)은
-> `peach-setup-harness/references/` 를 Source of Truth로 관리한다.
+> **대상 프로젝트 기술 스택 규칙**은 스킬별 Source of Truth를 따른다.
+> - 모노레포/API/front 프로젝트: `peach-setup-harness/references/`
+> - Frontend-Only UI Proto 프로젝트: `peach-setup-ui-proto/references/`
 > - `backend-rules.md` — 백엔드 규칙 (api/)
 > - `frontend-rules.md` — 프론트엔드 규칙 (front/)
 > - `testing-rules.md` — 테스트 및 품질
@@ -155,7 +156,8 @@ AI가 가이드 코드와 다르게 생성하려면 다음 4가지를 모두 만
 | `peach-agent-team-refactor` | 리팩토링 팀 조율 (layer=backend/frontend/all) | 오케스트레이터 |
 | `peach-qa-gate` | 작업 완료 전 증거 수집 게이트 (팀 스킬 완료 시 자동 후속 호출) | - |
 | `peach-handoff` | 세션 간 컨텍스트 인수인계 | - |
-| `peach-setup-harness` | 대상 프로젝트에 하네스 시스템 설정 (CLAUDE.md/AGENTS.md) | - |
+| `peach-setup-harness` | 대상 프로젝트에 하네스 시스템 설정 (모노레포/api/front) | - |
+| `peach-setup-ui-proto` | Frontend-Only UI Proto 프로젝트 하네스 설정 | - |
 
 ### 스킬 유형 분류
 
@@ -163,7 +165,7 @@ AI가 가이드 코드와 다르게 생성하려면 다음 4가지를 모두 만
 |------|------|-----------|
 | 능력 향상형 (4) | gen-design, gen-spec, gen-feature-docs, peach-help | 새 모델 시 A/B 테스트 |
 | 선호도 인코딩형 (12) | gen-backend, gen-db, gen-store, gen-ui, gen-ui-proto, add-api, add-cron, add-print, refactor-backend, refactor-frontend, agent-team, agent-team-refactor | Eval 충실도 검증 |
-| 프로세스 게이트 (3) | qa-gate, handoff, setup-harness | 워크플로우 품질 게이트 |
+| 프로세스 게이트 (4) | qa-gate, handoff, setup-harness, setup-ui-proto | 워크플로우 품질 게이트 |
 
 ### 에이전트 팀원 역할
 
