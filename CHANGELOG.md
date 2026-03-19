@@ -5,6 +5,18 @@
 
 ---
 
+## [v1.9.0] - 2026-03-19
+
+### Changed
+- `peach-agent-team` / `peach-agent-team-refactor`: 에이전트 정의를 `agents/` 디렉토리에서 `skills/*/references/*-agent.md`로 이전 — 스킬별 단일 Source of Truth 확립
+- `peach-agent-team` / `peach-agent-team-refactor`: Bounded Autonomy 분석 단계 강화 — 가이드 코드 참조 후 도메인 분석 절차 명시
+- `AGENTS.md`: 서브에이전트 위치 및 역할 분리 정책 업데이트
+
+### Removed
+- `agents/` 디렉토리 및 하위 에이전트 파일 8개 제거 (`backend-dev.md`, `backend-qa.md`, `frontend-qa.md`, `refactor-backend.md`, `refactor-frontend.md`, `store-dev.md`, `ui-dev.md`)
+
+---
+
 ## [v1.8.0] - 2026-03-17
 
 ### Added
